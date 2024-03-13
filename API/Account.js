@@ -25,27 +25,21 @@ const NewAccount = new Account({
 });
 
 uri.post('/login', async (req, res) => {
-    try {
         const userEmail = req.body.email;
         const userPassword = req.body.password;
 
         const user = await Account.findOne({ Email: userEmail });
 
         if (!user) {
-
             return res.json({ Status: 'Wrong Email' });
+        }else {
+            const isPasswordValid = await bcrypt.compare(userPassword, user.Password);
+            if(isPasswordValid){
+                return res.json({user});
+            }else{
+                return res.json({Status :"Wrong password"});
+            }
         }
-        const isPasswordValid = await bcrypt.compare(userPassword, user.password);
-
-        if (isPasswordValid) {
-            return res.json({ Status: 'Success' });
-        } else {
-            return res.json({ Status: 'Wrong Password' });
-        }
-    } catch (error) {
-        console.error(error);
-        return res.json({ Status: 'Fault' });
-    }
 });
 
 uri.post('/get_user_info', async (req, res) => {
@@ -53,7 +47,7 @@ uri.post('/get_user_info', async (req, res) => {
         console.log(req.body.email);
         const account = await Account.findOne({ Email: req.body.email });
         if (account) {
-            return res.json({ Status: "Success", Name: account.Name });
+            return res.json({account})
         } else {
             return res.json({ Status: "Not Found" });
         }

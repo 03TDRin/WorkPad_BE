@@ -15,6 +15,6 @@ db.once('open', () => {
     console.log('Kết nối MongoDB thành công');
 });
 app.use("/Account",account)
-app.listen(9000, () => {
+app.listen(9900, () => {
   console.log("Server is running!");
 });
