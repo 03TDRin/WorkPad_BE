@@ -23,21 +23,6 @@ const NewAccount = new Account({
   await NewAccount.save();
 });
 
-uri.post('/get_user_info', async (req, res) => {
-    try {
-        console.log(req.body.email);
-        const account = await Account.findOne({ Email: req.body.email });
-        if (account) {
-            return res.json({ Status: "Success", Name: account.Name });
-        } else {
-            return res.json({ Status: "Not Found" });
-        }
-    } catch (error) {
-        console.error(error);
-        return res.json({ Status: "Fault" });
-    }
-});
-
 uri.post('/login', async (req, res) => {
     try {
         const userEmail = req.body.email;
