@@ -83,6 +83,37 @@ uri.post('/get_user_info', async (req, res) => {
     }
 });
 
+uri.post('/get_user_notes', async (req, res) => {
+    try {
+        const userEmail = req.body.email;
+
+        if (!userEmail) {
+            return res.status(400).json({ Status: "Fault" });
+        }
+
+        const account = await Account.findOne({ Email: userEmail });
+
+        if (!account) {
+            return res.status(404).json({ Status: "Not Found" });
+        }
+
+        const userNotes = account.Notes;
+
+        const notesToReturn = userNotes.map(note => {
+            return {
+                Id: note._id,
+                Title: note.Title,
+                Prioritize: note.Prioritize
+            };
+        });
+
+        return res.json({ Status: "Success", Notes: notesToReturn });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ Status: "Fault" });
+    }
+});
+
 uri.post('/update_prioritize', async (req, res) => {
     try {
         const { id, newPrioritize } = req.body;
