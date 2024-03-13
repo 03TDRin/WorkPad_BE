@@ -64,82 +64,28 @@ uri.post('/get_user_info', async (req, res) => {
 });
 
 uri.post('/get_user_notes', async (req, res) => {
-    try {
-        const userEmail = req.body.email;
-
-        if (!userEmail) {
-            return res.status(400).json({ Status: "Fault" });
-        }
-
-        const account = await NoteModel.findOne({ Email: userEmail });
-
-        if (!account) {
-            return res.status(404).json({ Status: "Not Found" });
-        }
-
-        const userNotes = account.Notes;
-
-        const notesToReturn = userNotes.map(note => {
-            return {
-                Id: note._id,
-                Title: note.Title,
-                Prioritize: note.Prioritize
-            };
-        });
-
-        return res.json({ Status: "Success", Notes: notesToReturn });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ Status: "Fault" });
+    const NoteForEmail = await NoteModel.find({ EmailCreate: req.body.Email})
+    if(!NoteForEmail || NoteForEmail.length === 0){
+        res.json ({Status :"Not Found"})
+    }else{
+        res.json(NoteForEmail)
     }
 });
 
 uri.post('/update_prioritize', async (req, res) => {
-    try {
-        const { id, newPrioritize } = req.body;
-        if (!id || newPrioritize === undefined) {
-            return res.status(400).json({ Status: 'Fault'});
-        }
-
-        const account = await NoteModel.findOneAndUpdate(
-            { 'Notes._id': id },
-            { $set: { 'Notes.$.Prioritize': newPrioritize } },
-            { new: true }
+        const account = await Notes.updateOne(
+            { _id: req.body.id },
+            { $set: {Prioritize: res.body.newPrioritize } },
         );
-
-        if (account) {
-            return res.json({ Status: 'Success' });
-        } else {
-            return res.status(404).json({ Status: 'Not Found' });
-        }
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ Status: 'Fault' });
-    }
+        return res.json({Status : "Success"});
 });
 
 uri.post('/update_title', async (req, res) => {
-    try {
-        const { id, newTitle } = req.body;
-        if (!id || !newTitle) {
-            return res.status(400).json({ Status: 'Fault' });
-        }
-
-        const account = await NoteModel.findOneAndUpdate(
-            { 'Notes._id': id },
-            { $set: { 'Notes.$.Title': newTitle } },
-            { new: true }
-        );
-
-        if (account) {
-            return res.json({ Status: 'Success'});
-        } else {
-            return res.status(404).json({ Status: 'Not Found' });
-        }
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ Status: 'Fault' });
-    }
+        const account = await Notes.updateOne(
+            { _id: req.body.id },
+            { $set: {Title: res.body.newTitle } },
+        );  
+        return res.json({Status : "Success"})
 });
 
 module.exports = uri;
