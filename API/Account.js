@@ -58,7 +58,7 @@ uri.post('/get_user_info', async (req, res) => {
 });
 
 uri.post('/get_user_notes', async (req, res) => {
-    const NoteForEmail = await NoteModel.find({ EmailCreate: req.body.Email})
+    const NoteForEmail = await Notes.find({ EmailCreate: req.body.Email})
     if(!NoteForEmail || NoteForEmail.length === 0){
         res.json ({Status :"Not Found"})
     }else{
