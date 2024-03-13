@@ -2,6 +2,7 @@ const uri = require("express").Router();
 const bcrypt = require("bcrypt");
 const Account = require("../Model/AccountModel.js")
 const e = require("express");
+const NoteModel = require("../Model/NoteModel.js");
 
 const HashPassword = async (Password) => {
     const Hash = await bcrypt.hash(Password, 10);
@@ -49,22 +50,16 @@ uri.post('/login', async (req, res) => {
 
 uri.post('/get_user_info', async (req, res) => {
     try {
-        const userEmail = req.body.email;
-
-        if (!userEmail) {
-            return res.status(400).json({ Status: "Fault" });
-        }
-
-        const account = await Account.findOne({ Email: userEmail });
-
+        console.log(req.body.email);
+        const account = await Account.findOne({ Email: req.body.email });
         if (account) {
             return res.json({ Status: "Success", Name: account.Name });
         } else {
-            return res.status(404).json({ Status: "Not Found" });
+            return res.json({ Status: "Not Found" });
         }
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ Status: "Fault" });
+        return res.json({ Status: "Fault" });
     }
 });
 
@@ -76,7 +71,7 @@ uri.post('/get_user_notes', async (req, res) => {
             return res.status(400).json({ Status: "Fault" });
         }
 
-        const account = await Account.findOne({ Email: userEmail });
+        const account = await NoteModel.findOne({ Email: userEmail });
 
         if (!account) {
             return res.status(404).json({ Status: "Not Found" });
@@ -106,7 +101,7 @@ uri.post('/update_prioritize', async (req, res) => {
             return res.status(400).json({ Status: 'Fault'});
         }
 
-        const account = await Account.findOneAndUpdate(
+        const account = await NoteModel.findOneAndUpdate(
             { 'Notes._id': id },
             { $set: { 'Notes.$.Prioritize': newPrioritize } },
             { new: true }
@@ -130,7 +125,7 @@ uri.post('/update_title', async (req, res) => {
             return res.status(400).json({ Status: 'Fault' });
         }
 
-        const account = await Account.findOneAndUpdate(
+        const account = await NoteModel.findOneAndUpdate(
             { 'Notes._id': id },
             { $set: { 'Notes.$.Title': newTitle } },
             { new: true }
