@@ -58,7 +58,7 @@ uri.post('/get_user_info', async (req, res) => {
 });
 
 uri.post('/get_user_notes', async (req, res) => {
-    const NoteForEmail = await Notes.find({ EmailCreate: req.body.Email})
+    const NoteForEmail = await NoteModel.find({ EmailCreate: req.body.Email})
     if(!NoteForEmail || NoteForEmail.length === 0){
         res.json ({Status :"Not Found"})
     }else{
@@ -67,17 +67,17 @@ uri.post('/get_user_notes', async (req, res) => {
 });
 
 uri.post('/update_prioritize', async (req, res) => {
-        const account = await Notes.updateOne(
+        const account = await NoteModel.updateOne(
             { _id: req.body.id },
-            { $set: {Prioritize: res.body.newPrioritize } },
+            { $set: {Prioritize: req.body.newPrioritize } },
         );
         return res.json({Status : "Success"});
 });
 
 uri.post('/update_title', async (req, res) => {
-        const account = await Notes.updateOne(
+        const account = await NoteModel.updateOne(
             { _id: req.body.id },
-            { $set: {Title: res.body.newTitle } },
+            { $set: {Title: req.body.newTitle } },
         );  
         return res.json({Status : "Success"})
 });
